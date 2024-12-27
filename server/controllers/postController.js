@@ -1,5 +1,5 @@
 import Post from "../models/post.js";
-
+import mongoose from 'mongoose';
 
 // Function to Create a Post
 export async function createPost(req, res) {
@@ -78,5 +78,38 @@ export async function updatePost(req, res) {
         res.status(200).json(postToUpdate);
     } catch(err) {
         res.status(500).json(err);
+    }
+}
+
+
+// Function to Like or Unlike a Post
+export async function likePost(req, res) {
+    try {
+        const { postId } = req.params;
+        const userId = req.user.id;
+
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        const alreadyLiked = post.likes.includes(userId);
+
+        if (alreadyLiked) {
+            post.likes = post.likes.filter((id) => id.toString() !== userId);
+        } else {
+            post.likes.push(userId);
+        }
+
+        await post.save();
+
+        res.status(200).json({
+            message: alreadyLiked ? 'Post unliked' : 'Post liked',
+            likesCount: post.likes.length,
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to like or unlike the post', details: error.message });
     }
 }
