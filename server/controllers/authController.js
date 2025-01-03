@@ -15,6 +15,7 @@ export async function signUpFunction(req, res) {
     try {
         const user = await User.create({ username, email, password });
         res.status(201).json({ message: 'User created successfully', user });
+        
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

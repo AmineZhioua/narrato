@@ -1,6 +1,8 @@
 import Post from "../models/post.js";
 import mongoose from 'mongoose';
 
+
+
 // Function to Create a Post
 export async function createPost(req, res) {
     try {
@@ -76,6 +78,7 @@ export async function updatePost(req, res) {
         }
 
         res.status(200).json(postToUpdate);
+
     } catch(err) {
         res.status(500).json(err);
     }
