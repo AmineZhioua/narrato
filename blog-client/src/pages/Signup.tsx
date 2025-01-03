@@ -4,8 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios from "axios";
-import { Github } from 'lucide-react';
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -21,6 +19,7 @@ import { AuthLayout } from '@/components/auth-layout';
 
 const API_URL = import.meta.env.VITE_API_URL
 
+// Defining the Schema for the Signup Form
 const signupSchema = z.object({
   email: z.string().email("Invalid email address"),
   username: z.string().min(5, "Username must be at least 5 characters"),
@@ -28,10 +27,10 @@ const signupSchema = z.object({
 })
 
 const SignupPage = () => {
-  const navigate = useNavigate()
-  const [error, setError] = useState<string>("")
-  const [success, setSuccess] = useState<string>("")
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
@@ -40,28 +39,30 @@ const SignupPage = () => {
       username: "",
       password: "",
     },
-  })
+  });
 
   async function onSubmit(values: z.infer<typeof signupSchema>) {
-    setLoading(true)
-    setError("")
-    setSuccess("")
+    setLoading(true);
+    setError("");
+    setSuccess("");
 
     try {
-      const response = await axios.post(`${API_URL}/auth/signup`, values)
+      const response = await axios.post(`${API_URL}/auth/signup`, values);
       if (response.status === 201) {
-        setSuccess("Account created successfully. Please login to continue.")
-        form.reset()
+        setSuccess("Account created successfully. Please login to continue.");
+        form.reset();
         setTimeout(() => {
-          navigate("/")
-        }, 2000)
+          navigate("/");
+        }, 2500);
       }
+
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Something went wrong. Please try again."
-      setError(errorMessage)
+      setError(errorMessage);
+
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -167,8 +168,9 @@ const SignupPage = () => {
         </Form>
       </div>
     </AuthLayout>
-  )
+  );
 }
 
-export default SignupPage
 
+
+export default SignupPage;

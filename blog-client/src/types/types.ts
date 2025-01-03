@@ -24,5 +24,19 @@ export interface Post {
         userId: string;
         createdAt: string;
       }
-    ]
+    ],
+}
+
+
+
+export interface PostCardProps {
+  id: string;
+  username: string;
+  content: string;
+  imageUrl?: string;
+  likes: number;
+  comments: number;
+  userImage?: string;
+  onLike: (id: string) => void;
+  isLiked?: boolean;
 }

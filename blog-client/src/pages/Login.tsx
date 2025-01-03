@@ -1,14 +1,12 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import axios from "axios"
-import { Github } from 'lucide-react'
-
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Form,
   FormControl,
@@ -16,21 +14,25 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import { AuthLayout } from "@/components/auth-layout";
-import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/context/AuthContext";
 
-const API_URL = import.meta.env.VITE_API_URL
 
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+// Defining the Schema for the Login Form
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(5, "Password must be at least 5 characters"),
 })
 
 const LoginPage = () => {
-  const navigate = useNavigate()
-  const [error, setError] = useState<string>("")
-  const [loading, setLoading] = useState(false)
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -41,20 +43,23 @@ const LoginPage = () => {
   })
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
-    setLoading(true)
-    setError("")
+    setLoading(true);
+    setError("");
 
     try {
-      const response = await axios.post(`${API_URL}/auth/signup`, values)
+      const response = await axios.post(`${API_URL}/auth/login`, values);
       if (response.status === 200) {
-        navigate("/")
+        const token = response.data.token;
+        login(token); // Save token to context
+        navigate("/");
       }
+      
     } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || "Something went wrong. Please try again."
-      setError(errorMessage)
+      const errorMessage = error.response?.data?.message || "Something went wrong. Please try again.";
+      setError(errorMessage);
+
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -146,5 +151,6 @@ const LoginPage = () => {
   )
 }
 
-export default LoginPage
 
+
+export default LoginPage;
